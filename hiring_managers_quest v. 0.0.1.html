@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Hiring Manager's Quest | Aaron Perkins</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background: #0f380f;
+            color: #9bbc0f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .game-container {
+            max-width: 800px;
+            width: 100%;
+            background: #0f380f;
+            border: 8px solid #306230;
+            box-shadow: 
+                0 0 0 4px #0f380f,
+                0 0 0 8px #9bbc0f,
+                0 20px 40px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .title-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            text-shadow: 4px 4px 0 #0f380f;
+        }
+
+        .subtitle {
+            font-size: 0.7rem;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .author {
+            font-size: 0.6rem;
+            margin: 30px 0;
+            color: #8bac0f;
+        }
+
+        .input-container {
+            margin: 30px 0;
+        }
+
+        .input-label {
+            font-size: 0.7rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        input[type="text"] {
+            font-family: 'Press Start 2P', cursive;
+            background: #0f380f;
+            border: 4px solid #306230;
+            color: #9bbc0f;
+            padding: 12px;
+            font-size: 0.8rem;
+            width: 100%;
+            max-width: 400px;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: #9bbc0f;
+        }
+
+        .button {
+            font-family: 'Press Start 2P', cursive;
+            background: #306230;
+            color: #9bbc0f;
+            border: 4px solid #9bbc0f;
+            padding: 15px 30px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.1s;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background: #9bbc0f;
+            color: #0f380f;
+            transform: scale(1.05);
+        }
+
+        .button:active {
+            transform: scale(0.95);
+        }
+
+        .text-box {
+            background: #0f380f;
+            border: 4px solid #306230;
+            padding: 20px;
+            margin: 20px 0;
+            line-height: 2;
+            font-size: 0.7rem;
+            min-height: 200px;
+        }
+
+        .text-box p {
+            margin-bottom: 20px;
+            line-height: 2;
+        }
+
+        .text-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .choices {
+            margin: 20px 0;
+        }
+
+        .choice-button {
+            display: block;
+            width: 100%;
+            text-align: left;
+            margin: 10px 0;
+            padding: 15px 20px;
+            font-size: 0.65rem;
+            line-height: 1.6;
+        }
+
+        .player-name {
+            color: #8bac0f;
+            text-shadow: 2px 2px 0 #0f380f;
+        }
+
+        .click-sound {
+            color: #8bac0f;
+            font-size: 0.6rem;
+        }
+
+        .ending-screen {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .ending-title {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #8bac0f;
+        }
+
+        .ending-content {
+            font-size: 0.65rem;
+            line-height: 1.8;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .cheese-emoji {
+            font-size: 3rem;
+            margin: 20px 0;
+            display: block;
+        }
+
+        .stats {
+            background: #0f380f;
+            border: 4px solid #9bbc0f;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.6rem;
+            line-height: 1.8;
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        .divider {
+            border: 0;
+            border-top: 4px solid #306230;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 1rem;
+            }
+
+            .button, .choice-button {
+                font-size: 0.5rem;
+                padding: 12px 20px;
+            }
+
+            .text-box {
+                font-size: 0.55rem;
+            }
+
+            input[type="text"] {
+                font-size: 0.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 15px;
+                border-width: 4px;
+            }
+
+            .title {
+                font-size: 0.8rem;
+            }
+
+            .button, .choice-button {
+                font-size: 0.45rem;
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- TITLE SCREEN -->
+        <div class="screen active" id="title-screen">
+            <div class="title-screen">
+                <div class="title">
+                    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓<br>
+                    THE HIRING<br>
+                    MANAGER'S<br>
+                    QUEST<br>
+                    ▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+                </div>
+                <div class="subtitle">
+                    A Choose-Your-Own-Adventure<br>
+                    Job Application Experience
+                </div>
+                <div class="author">
+                    By Aaron Perkins
+                </div>
+                <div class="input-container">
+                    <label class="input-label">ENTER YOUR NAME:</label>
+                    <input type="text" id="player-name-input" maxlength="20" placeholder="Your name">
+                </div>
+                <button class="button" onclick="startGame()">
+                    <span class="blink">▶</span> PRESS START
+                </button>
+            </div>
+        </div>
+
+        <!-- GAME SCREENS -->
+        <div class="screen" id="game-screen">
+            <div class="text-box" id="story-text"></div>
+            <div class="choices" id="choices"></div>
+        </div>
+
+        <!-- ENDING SCREENS -->
+        <div class="screen" id="ending-screen">
+            <div class="ending-screen" id="ending-content"></div>
+        </div>
+
+        <!-- VERSION -->
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #306230;">
+            <p style="font-size: 0.5rem; color: #8bac0f;">v. 0.0.1</p>
+        </div>
+    </div>
+
+    <script>
+        let playerName = "";
+        let currentScene = "";
+
+        const scenes = {
+            scene1: {
+                text: (name) => `<p>You are <span class="player-name">${name}</span>, a key member of the hiring team at Codeword.</p>
+
+<p>You just checked the Greenhouse application bin for the Content Marketing Manager position. The towering pile of digital PDFs makes you momentarily consider what life would have been like had you followed your dream of becoming a park ranger.</p>
+
+<p>But the moment passes quickly. You have work to do, and this position needed to be filled yesterday.</p>
+
+<p>As you drag your mouse pointer to select the first resume, a familiar jitter hits the pit of your stomach. It's not nerves. It's your biological response to the third—no, <em>fourth</em>—cup of coffee you've had today.</p>
+
+<p>And it's not even 9am.</p>
+
+<p>You are ready.</p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) Open the next resume", scene: "scene2" },
+                    { text: "B) Question your life choices", scene: "scene9" },
+                    { text: "C) Check LinkedIn instead", scene: "scene15" }
+                ]
+            },
+
+            scene2: {
+                text: () => `<p>You open the first resume.</p>
+
+<p><span class="click-sound">*click*</span> No.</p>
+
+<p><span class="click-sound">*click*</span> No.</p>
+
+<p><span class="click-sound">*click*</span> No.</p>
+
+<p><span class="click-sound">*click*</span> Ooh, this one's interesting. They used Comic Sans. Always a good choice.</p>
+
+<p><span class="click-sound">*click*</span> No.</p>
+
+<p><span class="click-sound">*click*</span> No.</p>
+
+<p><span class="click-sound">*click*</span> Okay, this one says she's a former member of the Polka Queens of the Midwest and has... let's see... ah. Zero experience in marketing whatsoever.</p>
+
+<p><span class="click-sound">*click*</span> AI-generated.</p>
+
+<p><span class="click-sound">*click*</span> AI-generated.</p>
+
+<p><span class="click-sound">*click*</span> AI-generated.</p>
+
+<p><span class="click-sound">*click*</span> Ooh! Weird formatting and some spelling errors! A <em>real</em> resume! I mean, not a good fit for the role, but a breath of fresh air these days.</p>
+
+<p>(You momentarily think about all the fresh air that park rangers get... for their entire careers.)</p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) Keep going", scene: "scene3" },
+                    { text: "B) Take a break", scene: "scene10" },
+                    { text: "C) This is hopeless", scene: "scene20" }
+                ]
+            },
+
+            scene3: {
+                text: () => `<p><span class="click-sound">*click*</span></p>
+
+<p>You open the next file.</p>
+
+<p>Wait.</p>
+
+<p>What is this?</p>
+
+<p>It's not a resume. It's... a... game?</p>
+
+<p><em>(You're suddenly uncomfortable, wondering if this is how Neo felt when he realized he was in The Matrix.)</em></p>
+
+<p>The file is titled: "THE HIRING MANAGER'S QUEST - A Choose-Your-Own-Adventure Job Application"</p>
+
+<p>By Aaron Perkins.</p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) This is weird, delete it", scene: "scene4" },
+                    { text: "B) Okay, I'm curious", scene: "scene5" },
+                    { text: "C) Is this even allowed?", scene: "scene6" }
+                ]
+            },
+
+            scene4: {
+                text: () => `<p>Your mouse hovers over the delete button.</p>
+
+<p>You hesitate.</p>
+
+<p><em>"What if this is actually good and I just deleted the best candidate?"</em></p>
+
+<p>The question hangs in the air like your fourth cup of coffee's impending regret.</p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) Delete anyway, coward", scene: "scene2" },
+                    { text: "B) Okay fine, let's see what this is", scene: "scene5" }
+                ]
+            },
+
+            scene5: {
+                text: () => `<p>You open the file.</p>
+
+<p>It actually IS a game. A choose-your-own-adventure style application.</p>
+
+<p>You start clicking through it.</p>
+
+<p>The writing is... funny?</p>
+
+<p>And self-aware.</p>
+
+<p>And it shows actual skills—structure, narrative, technical execution.</p>
+
+<p><em>"Okay this is weird but I'm kind of impressed."</em></p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) Check his actual credentials", scene: "scene7" },
+                    { text: "B) Share this with the team", scene: "scene8" },
+                    { text: "C) Hire immediately", scene: "endingHire" }
+                ]
+            },
+
+            scene6: {
+                text: () => `<p>You stare at the file.</p>
+
+<p><em>"Is submitting a game instead of a resume even allowed?"</em></p>
+
+<p>You check the job posting. It says "Submit your resume and cover letter."</p>
+
+<p>Technically, this is... neither?</p>
+
+<p>But it IS more interesting than 8,216 PDFs that all say "detail-oriented team player with a passion for content marketing."</p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) Rules are rules, delete it", scene: "scene4" },
+                    { text: "B) Rules are meant to be broken", scene: "scene5" }
+                ]
+            },
+
+            scene7: {
+                text: () => `<p>You minimize the game and look at Aaron's actual background.</p>
+
+<p>20 years of experience. Military intelligence. Cybersecurity. AI governance. K-12 education.</p>
+
+<p>Published work. Speaking engagements. Real projects with real results.</p>
+
+<p><em>"Oh. He's actually qualified. The game isn't just a gimmick."</em></p>
+
+<p>It's a demonstration of exactly what you need: someone who can make complex content engaging.</p>
+
+<p><strong>Decision time:</strong></p>`,
+                choices: [
+                    { text: "A) Schedule an interview", scene: "endingHire" },
+                    { text: "B) Share with team first", scene: "scene8" }
+                ]
+            },
+
+            scene8: {
+                text: () => `<p>You Slack it to the team.</p>
+
+<p>"Did anyone else see this?"</p>
+
+<p>Within seconds:</p>
+
+<p>"This is hilarious"<br>
+"Is this for real?"<br>
+"I want to meet this person"<br>
+"Did he really make a GAME?"</p>
+
+<p>Everyone wants to interview him.</p>
+
+<p>The decision is easy.</p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) Set up the interview", scene: "endingHire" }
+                ]
+            },
+
+            scene9: {
+                text: (name) => `<p>You open a new tab and navigate to https://www.fs.usda.gov/working-with-us/careers</p>
+
+<p>The US Forest Service is hiring! Park Rangers needed in scenic locations across America.</p>
+
+<p>Fresh air. Wildlife. Meaningful work protecting nature.</p>
+
+<p>The deep, unmet dream of childhood stares back at you from the screen.</p>
+
+<p><em>You could do this. You could really do this.</em></p>
+
+<p>Then you see the salary. It's... significantly less than you make now.</p>
+
+<p>Also, you'd have to move to Idaho.</p>
+
+<p>Also, you hate bugs.</p>
+
+<p>The dream dies a little harder each time you look.</p>
+
+<p><em>*Sigh.*</em></p>
+
+<p><strong>What do you do now, ${name}?</strong></p>`,
+                choices: [
+                    { text: "A) Close the tab and get back to work", scene: "scene10" },
+                    { text: "B) Apply anyway, consequences be damned", scene: "endingRanger" },
+                    { text: "C) Spiral deeper into existential crisis", scene: "scene11" }
+                ]
+            },
+
+            scene10: {
+                text: () => `<p>You close all distractions and return to Greenhouse.</p>
+
+<p>The pile of resumes stares back at you.</p>
+
+<p>Every single one looks the same.</p>
+
+<p><em>"Experienced content marketer..."</em><br>
+<em>"Passion for storytelling..."</em><br>
+<em>"Detail-oriented team player..."</em></p>
+
+<p>You can feel your soul slowly leaving your body.</p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) Power through", scene: "scene12" },
+                    { text: "B) Need more caffeine", scene: "scene13" },
+                    { text: "C) Check that game resume people mentioned", scene: "scene5" }
+                ]
+            },
+
+            scene11: {
+                text: () => `<p>You Google "is it too late to change careers at 30."</p>
+
+<p>The internet is full of inspiring stories.</p>
+
+<p>A lawyer who became a baker.<br>
+An accountant who became a yoga instructor.<br>
+A marketing professional who became a... park ranger.</p>
+
+<p><em>"IT'S A SIGN!"</em></p>
+
+<p>You take a personality quiz: "What kind of tree are you?"</p>
+
+<p>You're a Douglas Fir, apparently. "Strong, resilient, and happiest in the Pacific Northwest."</p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) This is ridiculous, back to work", scene: "scene10" },
+                    { text: "B) Take the FULL personality test (47 questions)", scene: "scene14" },
+                    { text: "C) Research ranger salaries more seriously", scene: "scene9" }
+                ]
+            },
+
+            scene12: {
+                text: () => `<p>Resume after resume after resume.</p>
+
+<p>Your vision is blurring.</p>
+
+<p>The words stop making sense.</p>
+
+<p>"Synergistic... paradigm... leverage... storytelling..."</p>
+
+<p>Then...</p>
+
+<p>Wait.</p>
+
+<p>This one is different.</p>
+
+<p>It's Aaron's game.</p>
+
+<p><em>"What is this? Is this... hope?"</em></p>`,
+                choices: [
+                    { text: "A) Open the game", scene: "scene5" }
+                ]
+            },
+
+            scene13: {
+                text: () => `<p>You walk to the kitchen and pour your fifth cup of coffee.</p>
+
+<p>Your hands are shaking slightly.</p>
+
+<p>You're pretty sure you can see sounds now.</p>
+
+<p><em>"Is this what park rangers feel like? Probably not. They probably feel... calm. And outdoorsy."</em></p>
+
+<p>The coffee tastes like regret and deadlines.</p>`,
+                choices: [
+                    { text: "A) Back to work", scene: "scene10" },
+                    { text: "B) Maybe switch to herbal tea", scene: "scene10" }
+                ]
+            },
+
+            scene14: {
+                text: () => `<p>47 questions later...</p>
+
+<p>The results are in:</p>
+
+<p><strong>"Based on your answers, you should be a PARK RANGER!"</strong></p>
+
+<p>The irony is not lost on you.</p>
+
+<p>The universe is basically screaming at this point.</p>`,
+                choices: [
+                    { text: "A) Okay fine, back to the Forest Service website", scene: "scene9" },
+                    { text: "B) Ignore the universe, back to resumes", scene: "scene10" }
+                ]
+            },
+
+            scene15: {
+                text: () => `<p>You tell yourself you're "doing research" but really you just need a mental break from PDFs.</p>
+
+<p>You open LinkedIn and start scrolling.</p>
+
+<p>Sponsored posts.<br>
+Someone's 5-year work anniversary.<br>
+A think piece about AI that's already been written 47 times this week.</p>
+
+<p>Your feed is a wasteland of professional performance.</p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) Keep scrolling", scene: "scene16" },
+                    { text: "B) Search for candidates", scene: "scene17" },
+                    { text: "C) Close app, back to work", scene: "scene10" }
+                ]
+            },
+
+            scene16: {
+                text: () => `<p>You keep scrolling.</p>
+
+<p>Then you see a post from someone named Aaron Perkins.</p>
+
+<p>He's tagged Codeword.</p>
+
+<p><em>"Wait... isn't this the game guy someone mentioned?"</em></p>
+
+<p>The post says: "Just submitted my application to @Codeword. If you're reading this, you're probably playing the game. How meta is this?"</p>
+
+<p><em>(The Matrix feeling intensifies.)</em></p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) This is too meta, ignore it", scene: "scene15" },
+                    { text: "B) Okay I'm hooked, click his profile", scene: "scene19" }
+                ]
+            },
+
+            scene17: {
+                text: () => `<p>You use LinkedIn Recruiter to search for "Content Marketing Manager."</p>
+
+<p>8,000+ results.</p>
+
+<p>They all look the same.</p>
+
+<p>Everyone is a "strategic thinker" and "creative problem solver" who "thrives in fast-paced environments."</p>
+
+<p>Your will to live decreases with each profile.</p>`,
+                choices: [
+                    { text: "A) Back to scrolling", scene: "scene15" },
+                    { text: "B) Give up on LinkedIn", scene: "scene10" }
+                ]
+            },
+
+            scene18: {
+                text: () => `<p>You click the post.</p>
+
+<p>It's specifically written for people playing his game.</p>
+
+<p><em>"If you've made it this far, you probably chose the LinkedIn path. Welcome! You're in the game. The game is in you. Are any of us real? Is this just a simulation?"</em></p>
+
+<p>He linked to his actual LinkedIn profile.</p>
+
+<p><strong>Where does this rabbit hole go?</strong></p>`,
+                choices: [
+                    { text: "A) Check his profile", scene: "scene19" },
+                    { text: "B) This is too weird", scene: "scene15" }
+                ]
+            },
+
+            scene19: {
+                text: () => `<p>You dive into Aaron's LinkedIn profile.</p>
+
+<p>Military intelligence background.<br>
+Cybersecurity expertise.<br>
+AI governance work.<br>
+K-12 education experience.</p>
+
+<p>Published articles. Conference talks. Real projects.</p>
+
+<p>The guy has range.</p>
+
+<p>And apparently, a sense of humor.</p>
+
+<p><em>"Where does this rabbit hole go?"</em></p>
+
+<p>You're starting to think it goes to an interview.</p>`,
+                choices: [
+                    { text: "A) Play his game application", scene: "scene5" },
+                    { text: "B) Share profile with team", scene: "scene8" },
+                    { text: "C) Schedule interview immediately", scene: "endingHire" }
+                ]
+            },
+
+            scene20: {
+                text: () => `<p>You lean back in your chair.</p>
+
+<p>This is hopeless.</p>
+
+<p>Your phone buzzes on the desk. It's a notification from your food delivery app.</p>
+
+<p>The icon is large and friendly. Inviting, even.</p>
+
+<p>You're about to tap it when you think about all the unhealthy food options...</p>
+
+<p><em>*Shrug*</em></p>
+
+<p><em>"Eh, mostly harmless."</em></p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) Order food", scene: "scene21" },
+                    { text: "B) Resist temptation, back to work", scene: "scene2" }
+                ]
+            },
+
+            scene21: {
+                text: () => `<p>You open the app and start browsing.</p>
+
+<p>So many options.</p>
+
+<p>Pizza? No.<br>
+Burgers? Eh.<br>
+Sushi? Too fancy for a Tuesday.<br>
+Salad? Let's not get crazy.</p>
+
+<p>Sandwiches? Now we're talking.</p>
+
+<p><strong>What do you order?</strong></p>`,
+                choices: [
+                    { text: "A) Order a sandwich", scene: "scene22" },
+                    { text: "B) Actually, pizza sounds good", scene: "scene23" },
+                    { text: "C) Close app, this is a distraction", scene: "scene2" }
+                ]
+            },
+
+            scene22: {
+                text: () => `<p>SANDWICH CUSTOMIZATION SCREEN</p>
+
+<p>White bread or sourdough?<br>
+You choose sourdough. Obviously.</p>
+
+<p>Turkey or... cheese?<br>
+Cheese. Always cheese.</p>
+
+<p>Then you see it:</p>
+
+<p><strong>"ADD EXTRA CHEESE - Wisconsin Aged Cheddar (+$2)"</strong></p>
+
+<p>The cheese calls to you.</p>
+
+<p>It's from Wisconsin.</p>
+
+<p>How can you say no to Wisconsin?</p>
+
+<p><strong>What do you do?</strong></p>`,
+                choices: [
+                    { text: "A) ADD EXTRA WISCONSIN CHEESE", scene: "scene24" },
+                    { text: "B) Regular cheese is fine", scene: "scene25" },
+                    { text: "C) Wait, actually want pizza", scene: "scene23" }
+                ]
+            },
+
+            scene23: {
+                text: () => `<p>You switch to pizza.</p>
+
+<p>The toppings menu appears.</p>
+
+<p>Pepperoni.<br>
+Mushrooms.<br>
+Green peppers.</p>
+
+<p>And then... at the bottom...</p>
+
+<p><strong>"Premium Wisconsin Cheese Blend (+$3)"</strong></p>
+
+<p><em>It's a sign.</em></p>
+
+<p>The cheese follows you everywhere.</p>
+
+<p>You cannot escape your destiny.</p>`,
+                choices: [
+                    { text: "A) Accept cheese destiny", scene: "scene24" }
+                ]
+            },
+
+            scene24: {
+                text: () => `<p>You add the Wisconsin cheddar.</p>
+
+<p>Then you see another option: <strong>"Double Wisconsin Cheddar (+$2)"</strong></p>
+
+<p><em>"Is there such a thing as too much cheese?"</em></p>
+
+<p><em>"No,"</em> you decide. <em>"There is not."</em></p>
+
+<p>You add double cheese.</p>
+
+<p>Order confirmed.</p>
+
+<p>Estimated delivery: 25 minutes.</p>
+
+<p><strong>What do you do while you wait?</strong></p>`,
+                choices: [
+                    { text: "A) Wait for delivery", scene: "scene26" },
+                    { text: "B) Back to resumes while waiting", scene: "scene2" }
+                ]
+            },
+
+            scene25: {
+                text: () => `<p>You select regular cheese like a coward.</p>
+
+<p>The order is confirmed.</p>
+
+<p>But as you wait, a small voice whispers in the back of your mind:</p>
+
+<p><em>"You could have had Wisconsin..."</em></p>
+
+<p>The regret is immediate and profound.</p>`,
+                choices: [
+                    { text: "A) Live with your shame, back to work", scene: "scene2" },
+                    { text: "B) Cancel order, get Wisconsin cheese", scene: "scene22" }
+                ]
+            },
+
+            scene26: {
+                text: () => `<p>25 minutes later...</p>
+
+<p>*Ding dong*</p>
+
+<p>The doorbell rings.</p>
+
+<p>You rush to the door.</p>
+
+<p>It's here.</p>
+
+<p>You open the bag with trembling hands...</p>`,
+                choices: [
+                    { text: "A) Examine the sandwich", scene: "scene27" }
+                ]
+            },
+
+            scene27: {
+                text: () => `<p>You carefully unwrap the sandwich.</p>
+
+<p>It's beautiful.</p>
+
+<p>Golden, perfectly-toasted sourdough bread.</p>
+
+<p>Wisconsin aged cheddar, melted to perfection.</p>
+
+<p>A work of art.</p>
+
+<p>You are happy.</p>
+
+<p>For this moment, nothing else matters.</p>
+
+<p>Not the resumes.<br>
+Not the park ranger dreams.<br>
+Not the existential dread.</p>
+
+<p>Just you and this magnificent cheese sandwich.</p>`,
+                choices: [
+                    { text: "A) Take a bite", scene: "endingCheese" }
+                ]
+            }
+        };
+
+        function startGame() {
+            const nameInput = document.getElementById('player-name-input').value.trim();
+            playerName = nameInput || 'Friend';
+            
+            document.getElementById('title-screen').classList.remove('active');
+            document.getElementById('game-screen').classList.add('active');
+            
+            showScene('scene1');
+        }
+
+        function showScene(sceneId) {
+            currentScene = sceneId;
+            const scene = scenes[sceneId];
+            
+            const storyText = document.getElementById('story-text');
+            storyText.innerHTML = scene.text(playerName);
+            
+            const choicesDiv = document.getElementById('choices');
+            choicesDiv.innerHTML = '';
+            
+            scene.choices.forEach(choice => {
+                const button = document.createElement('button');
+                button.className = 'button choice-button';
+                button.innerHTML = choice.text;
+                button.onclick = () => {
+                    if (choice.scene.startsWith('ending')) {
+                        showEnding(choice.scene);
+                    } else {
+                        showScene(choice.scene);
+                    }
+                };
+                choicesDiv.appendChild(button);
+            });
+
+            window.scrollTo(0, 0);
+        }
+
+        function showEnding(endingType) {
+            document.getElementById('game-screen').classList.remove('active');
+            document.getElementById('ending-screen').classList.add('active');
+            
+            const endingContent = document.getElementById('ending-content');
+            
+            if (endingType === 'endingHire') {
+                endingContent.innerHTML = `
+                    <div class="ending-title">★ SUCCESS ★</div>
+                    <div class="ending-content">
+                        <p><strong>CONGRATULATIONS!</strong></p>
+                        <p>You found the right candidate!</p>
+                        <hr class="divider">
+                        <p>Aaron Perkins would love to talk to you about joining the Codeword team.</p>
+                        <p style="margin-top: 30px;">
+                            💼 <a href="https://www.linkedin.com/in/aaronwperkins" style="color: #9bbc0f;" target="_blank">LinkedIn Profile</a><br>
+                            📅 <a href="https://calendar.app.google/VKgneZMynBaii1g5A" style="color: #9bbc0f;" target="_blank">Schedule a call</a>
+                        </p>
+                        <p style="margin-top: 30px; font-size: 0.6rem; color: #8bac0f;">
+                            P.S. - Check the Greenhouse application bin for Aaron's traditional resume with additional contact information.
+                        </p>
+                    </div>
+                    <button class="button" onclick="location.reload()">▶ PLAY AGAIN</button>
+                `;
+            } else if (endingType === 'endingRanger') {
+                endingContent.innerHTML = `
+                    <div class="ending-title">GAME OVER</div>
+                    <div class="ending-content">
+                        <p>You quit your job at Codeword.</p>
+                        <p>You move to Idaho.</p>
+                        <p>You become a park ranger.</p>
+                        <p style="margin-top: 20px;">The fresh air is nice.</p>
+                        <p>The bugs are... less nice.</p>
+                        <p>The salary is definitely less nice.</p>
+                        <p style="margin-top: 20px;">But hey, you followed your dream!</p>
+                        <p>(The cheese sandwich from that alternate timeline haunts your dreams.)</p>
+                    </div>
+                    <button class="button" onclick="location.reload()">▶ TRY AGAIN</button>
+                    <button class="button" onclick="location.reload()">▶ WAIT, WHAT CHEESE SANDWICH?</button>
+                `;
+            } else if (endingType === 'endingCheese') {
+                endingContent.innerHTML = `
+                    <div class="ending-title">CONGRATULATIONS!</div>
+                    <span class="cheese-emoji">🧀</span>
+                    <div class="ending-content">
+                        <p><strong>You have successfully acquired:</strong></p>
+                        <p style="text-align: center; font-size: 0.8rem; margin: 20px 0;">ONE (1) CHEESE SANDWICH<br>FROM WISCONSIN</p>
+                        <hr class="divider">
+                        <div class="stats">
+                            <strong>INGREDIENTS:</strong><br>
+                            ✓ Aged cheddar from Wisconsin<br>
+                            ✓ Artisan sourdough bread<br>
+                            ✓ A hint of existential fulfillment<br>
+                            ✓ No regrets
+                        </div>
+                        <p><strong>This sandwich will NOT:</strong></p>
+                        <p>
+                            ❌ Write your keynote speeches<br>
+                            ❌ Manage your Google account<br>
+                            ❌ Navigate agency politics<br>
+                            ❌ Help with that AI strategy thing
+                        </p>
+                        <p style="margin-top: 20px;"><strong>But it IS delicious.</strong></p>
+                        <p style="margin-top: 20px; color: #8bac0f;">Also, you still need to hire someone.</p>
+                    </div>
+                    <button class="button" onclick="location.reload()" style="margin: 5px;">▶ RESTART</button>
+                    <button class="button" onclick="showEnding('endingHire')" style="margin: 5px;">▶ HIRE AARON</button>
+                    <a href="https://venmo.com/aaronperkins" target="_blank" class="button" style="margin: 5px;">▶ SEND AARON A CHEESE SANDWICH</a>
+                    <button class="button" onclick="showEnding('endingRanger')" style="margin: 5px;">▶ QUIT & BECOME RANGER</button>
+                `;
+            }
+
+            window.scrollTo(0, 0);
+        }
+    </script>
+
+</body>
+</html>
